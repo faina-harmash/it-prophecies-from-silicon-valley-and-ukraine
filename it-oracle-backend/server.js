@@ -1,15 +1,11 @@
 const express = require('express');
 const cors = require('cors');
-// Змінено require на динамічний import() для node-fetch, оскільки він є ES Module.
-// Динамічний імпорт повертає Promise, тому використовуємо async/await.
-let fetch;
-import('node-fetch').then(module => {
-    fetch = module.default;
-}).catch(error => {
-    console.error("Failed to load node-fetch:", error);
-    // Додайте обробку помилок або вихід з програми, якщо fetch не завантажується
-    process.exit(1);
-});
+
+// Змінено на використання синхронного require() для node-fetch,
+// оскільки це є більш надійним варіантом для CommonJS модулів
+// при їх розгортанні як Serverless Functions у Vercel.
+// Це усуне проблему "node-fetch is not initialized".
+const fetch = require('node-fetch');
 
 require('dotenv').config(); // Для завантаження змінних середовища з файлу .env
 
@@ -27,11 +23,11 @@ app.use(express.json()); // Дозволити Express парсити JSON ті�
 
 // Ендпоінт проксі для Gemini API
 app.post('/api/gemini-proxy', async (req, res) => {
-    // Перевіряємо, чи fetch успішно завантажено
-    if (!fetch) {
-        console.error("node-fetch is not initialized.");
-        return res.status(500).json({ error: 'Server error: AI service not ready.' });
-    }
+    // Тепер `fetch` завжди буде ініціалізований, тому ця перевірка більше не потрібна.
+    // if (!fetch) {
+    //     console.error("node-fetch is not initialized.");
+    //     return res.status(500).json({ error: 'Server error: AI service not ready.' });
+    // }
 
     const { prompt, schema } = req.body;
 
