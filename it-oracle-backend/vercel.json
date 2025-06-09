@@ -11,7 +11,7 @@
       "src": "/api/gemini-proxy",
       "dest": "server.js",
       "headers": {
-        "Access-Control-Allow-Origin": "*", // Дозволити запити з будь-якого джерела
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization"
       }
@@ -20,7 +20,7 @@
       "src": "/(.*)",
       "dest": "server.js",
       "headers": {
-        "Access-Control-Allow-Origin": "*", // Дозволити запити з будь-якого джерела
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization"
       }
