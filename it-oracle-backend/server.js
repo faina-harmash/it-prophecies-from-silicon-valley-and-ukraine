@@ -22,7 +22,25 @@ app.post('/api/gemini-proxy', async (req, res) => {
     // стає доступним як 'fetch' безпосередньо при виконанні запиту.
     const { default: fetch } = await import('node-fetch');
 
-    const { prompt, schema } = req.body;
+    // *** ЗМІНА: Витягуємо prompt та schema з вкладеної структури payload ***
+    // Очікуємо, що req.body - це повний payload для Gemini API
+    const geminiPayload = req.body;
+
+    let prompt = '';
+    let schema = null;
+
+    // Перевіряємо, чи існує contents та parts для витягнення prompt
+    if (geminiPayload && geminiPayload.contents && geminiPayload.contents.length > 0 &&
+        geminiPayload.contents[0].parts && geminiPayload.contents[0].parts.length > 0 &&
+        geminiPayload.contents[0].parts[0].text) {
+        prompt = geminiPayload.contents[0].parts[0].text;
+    }
+
+    // Перевіряємо, чи існує generationConfig для витягнення schema
+    if (geminiPayload && geminiPayload.generationConfig && geminiPayload.generationConfig.responseSchema) {
+        schema = geminiPayload.generationConfig.responseSchema;
+    }
+    // *** КІНЕЦЬ ЗМІН ***
 
     // Перевірка, що prompt не є пустим або неіснуючим
     if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
@@ -40,22 +58,15 @@ app.post('/api/gemini-proxy', async (req, res) => {
 
     const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-    let payload = {
-        contents: [{ role: "user", parts: [{ text: prompt }] }]
-    };
-
-    if (schema) {
-        payload.generationConfig = {
-            responseMimeType: "application/json",
-            responseSchema: schema
-        };
-    }
+    // *** ЗМІНА: Тепер надсилаємо весь отриманий geminiPayload до Gemini API ***
+    // Оскільки фронтенд вже надсилає готову структуру payload, ми її використовуємо
+    const finalGeminiApiPayload = geminiPayload;
 
     try {
         const geminiResponse = await fetch(geminiApiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(finalGeminiApiPayload)
         });
 
         if (!geminiResponse.ok) {
