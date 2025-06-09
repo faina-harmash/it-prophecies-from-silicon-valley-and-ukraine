@@ -1,37 +1,30 @@
 const express = require('express');
-const cors = require('cors');
-
-// Змінено на використання синхронного require() для node-fetch,
-// оскільки це є більш надійним варіантом для CommonJS модулів
-// при їх розгортанні як Serverless Functions у Vercel.
-// Це усуне проблему "node-fetch is not initialized".
-const fetch = require('node-fetch');
+const cors = require('cors'); // Залишаємо cors, якщо потрібно для локального тестування, але Vercel.json обробляє це на деплої
 
 require('dotenv').config(); // Для завантаження змінних середовища з файлу .env
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware для CORS (Cross-Origin Resource Sharing)
-// ТИМЧАСОВО: Дозволяємо всі джерела. Це небезпечно для продакшену, але допомагає діагностувати проблему.
+// CORS Middleware (залишаємо, якщо потрібно для локального тестування; для Vercel це обробляється через vercel.json)
+// Якщо ви хочете, щоб це працювало локально без .env, можете розкоментувати і налаштувати
 app.use(cors({
-    origin: '*', // Дозволити запити з будь-якого джерела
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Дозволити всі HTTP методи
+    origin: '*', // Дозволити запити з будь-якого джерела для локального тестування
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json()); // Дозволити Express парсити JSON тіла запитів
 
 // Ендпоінт проксі для Gemini API
 app.post('/api/gemini-proxy', async (req, res) => {
-    // Тепер `fetch` завжди буде ініціалізований, тому ця перевірка більше не потрібна.
-    // if (!fetch) {
-    //     console.error("node-fetch is not initialized.");
-    //     return res.status(500).json({ error: 'Server error: AI service not ready.' });
-    // }
+    // *** Виправлення: Динамічний імпорт node-fetch всередині обробника маршруту ***
+    // Це гарантує, що node-fetch імпортується асинхронно, і його дефолтний експорт
+    // стає доступним як 'fetch' безпосередньо при виконанні запиту.
+    const { default: fetch } = await import('node-fetch');
 
     const { prompt, schema } = req.body;
 
-    // *** Виправлення: Перевірка, що prompt не є пустим або неіснуючим ***
+    // Перевірка, що prompt не є пустим або неіснуючим
     if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
         console.error("Received empty or invalid prompt.");
         return res.status(400).json({ error: 'Invalid or empty prompt provided.' });
@@ -68,12 +61,11 @@ app.post('/api/gemini-proxy', async (req, res) => {
         if (!geminiResponse.ok) {
             const errorText = await geminiResponse.text();
             console.error("Gemini API direct error:", errorText);
-            // Повертаємо детальнішу помилку, яка прийшла від Gemini
             return res.status(geminiResponse.status).json({ error: `Gemini API responded with an error: ${errorText}` });
         }
 
         const geminiResult = await geminiResponse.json();
-        res.json(geminiResult); // Відправлення відповіді від Gemini назад фронтенду
+        res.json(geminiResult);
 
     } catch (error) {
         console.error('Error proxying Gemini API request:', error);
@@ -81,12 +73,10 @@ app.post('/api/gemini-proxy', async (req, res) => {
     }
 });
 
-// Простий кореневий маршрут для перевірки, що сервер працює
 app.get('/', (req, res) => {
     res.send('IT Oracle Backend Proxy is running!');
 });
 
-// Запуск сервера
 app.listen(PORT, () => {
     console.log(`Proxy server listening on port ${PORT}`);
     console.log(`Access at http://localhost:${PORT}`);
