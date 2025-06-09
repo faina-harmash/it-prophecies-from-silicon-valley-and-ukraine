@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Пророцтва з Кремнієвої долини</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom CSS variables for theme */
+        :root {
+            --accent-color: #10B981; /* Default green */
+            --bg-dark: #0A0A0A;
+            --text-light: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --box-bg: rgba(25, 25, 25, 0.7); /* Slightly lighter than main bg, semi-transparent */
+            --box-border-gradient-start: rgba(255, 255, 255, 0);
+            --box-border-gradient-end: var(--accent-color);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            cursor: none; /* Hide default cursor */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Syne', sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* Custom Cursor */
+        #custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            pointer-events: none;
+            transition: width 0.2s, height 0.2s, background-color 0.2s, transform 0.2s ease-out;
+            z-index: 9999;
+            opacity: 0.8;
+            transform: translate(-50%, -50%); /* Center the cursor */
+        }
+
+        #custom-cursor.interactive {
+            width: 30px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border: 2px solid var(--accent-color);
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+
+        /* Canvas for animated grid background */
+        #grid-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0.2;
+        }
+
+        /* Bubbles animation */
+        @keyframes bubble-float {
+            0% { transform: translateY(0) scale(0.8); opacity: 0.5; }
+            50% { transform: translateY(-50px) scale(1.1); opacity: 0.8; }
+            100% { transform: translateY(0) scale(0.8); opacity: 0.5; }
+        }
+
+        .bubble {
+            position: fixed;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+            animation: bubble-float 10s ease-in-out infinite alternate;
+            z-index: -1;
+        }
+
+        .bubble:nth-child(1) { top: 10%; left: 10%; width: 50px; height: 50px; animation-delay: 0s; }
+        .bubble:nth-child(2) { bottom: 15%; right: 10%; width: 70px; height: 70px; animation-delay: 2s; }
+        .bubble:nth-child(3) { top: 20%; right: 20%; width: 60px; height: 60px; animation-delay: 4s; }
+        .bubble:nth-child(4) { bottom: 5%; left: 20%; width: 80px; height: 80px; animation-delay: 6s; }
+
+        /* Hero title animation */
+        .hero-title span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: letter-appear 0.5s forwards;
+        }
+
+        @keyframes letter-appear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Bento Box Styling */
+        .bento-box {
+            background-color: var(--box-bg);
+            border-radius: 1.5rem; /* rounded-xl */
+            padding: 1.5rem; /* p-6 */
+            backdrop-filter: blur(5px); /* Semi-transparent effect */
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05); /* Subtle border */
+        }
+
+        .bento-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 1.5rem;
+            padding: 2px; /* Controls border thickness */
+            background: linear-gradient(45deg, var(--box-border-gradient-start) 0%, var(--box-border-gradient-start) 50%, var(--box-border-gradient-end) 100%);
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .bento-box:hover::before {
+            opacity: 1;
+        }
+
+        /* Buttons and Inputs */
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: var(--bg-dark);
+            padding: 0.75rem 1.5rem; /* py-3 px-6 */
+            border-radius: 0.75rem; /* rounded-xl */
+            font-weight: 600; /* font-semibold */
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 4px 10px rgba(var(--accent-color-rgb-r), var(--accent-color-rgb-g), var(--accent-color-rgb-b), 0.3);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-color); /* Slightly darker on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(var(--accent-color-rgb-r), var(--accent-color-rgb-g), var(--accent-color-rgb-b), 0.4);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+            opacity: 0;
+        }
+
+        .btn-primary:active::before {
+            width: 200%;
+            height: 200%;
+            opacity: 1;
+        }
+
+        .input-field {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 1rem; /* py-3 px-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+            color: var(--text-light);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb-r), var(--accent-color-rgb-g), var(--accent-color-rgb-b), 0.3);
+        }
+
+        /* Calendar Styling */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+        .calendar-day {
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--text-light);
+        }
+        .calendar-day.current-day {
+            background-color: var(--accent-color);
+            color: var(--bg-dark);
+            font-weight: bold;
+        }
+        .calendar-header {
+            font-weight: bold;
+            color: var(--text-secondary);
+        }
+
+        /* Tarrot Cards */
+        .tarot-card-container {
+            perspective: 1000px; /* For 3D flip effect */
+            width: 150px; /* Fixed width for cards */
+            height: 200px; /* Fixed height for cards */
+        }
+        .tarot-card {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            position: relative;
+            cursor: pointer;
+        }
+        .tarot-card.flipped {
+            transform: rotateY(180deg);
+        }
+        .tarot-card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .tarot-card-front {
+            background-color: rgba(var(--accent-color-rgb-r), var(--accent-color-rgb-g), var(--accent-color-rgb-b), 0.2); /* Accent color tint */
+            color: var(--text-light);
+            font-size: 3rem;
+            border: 2px solid var(--accent-color);
+        }
+        .tarot-card-back {
+            background-color: var(--box-bg);
+            color: var(--text-light);
+            transform: rotateY(180deg);
+            text-align: center;
+            font-size: 0.85rem; /* Slightly smaller font */
+            line-height: 1.3;
+            overflow-y: auto; /* Allow scrolling if content is too long */
+            max-height: 100%; /* Ensure it respects container height */
+        }
+
+        /* Magic Wand Animation */
+        .magic-wand {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0;
+            animation: magic-wand-anim 1s forwards ease-out;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color);
+        }
+
+        @keyframes magic-wand-anim {
+            0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+            50% { opacity: 1; transform: translate(50px, -50px) scale(1.2); }
+            100% { opacity: 0; transform: translate(100px, -100px) scale(1); }
+        }
+
+        /* Totem Animal Animation */
+        @keyframes totem-run {
+            0% { opacity: 0; transform: translateX(-100%) translateY(0); }
+            20% { opacity: 1; transform: translateX(0) translateY(0); }
+            80% { opacity: 1; transform: translateX(100%) translateY(-20px); }
+            100% { opacity: 0; transform: translateX(200%) translateY(-50px); }
+        }
+        .totem-animal-display {
+            position: absolute;
+            font-size: 4rem;
+            animation: totem-run 1.5s forwards ease-in-out;
+        }
+
+        /* Modal Styling */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--box-bg);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.open .modal-content {
+            transform: scale(1);
+        }
+
+        /* Cookie breaking animation */
+        @keyframes cookie-break {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.1) rotate(10deg); opacity: 0.8; }
+            100% { transform: scale(0.8) rotate(-10deg); opacity: 0; }
+        }
+
+        .cookie-broken {
+            animation: cookie-break 0.5s forwards;
+            opacity: 0; /* Ensures it starts hidden after animation */
+        }
+
+        .cookie-shatter-part {
+            position: absolute;
+            opacity: 0;
+            animation: shatter-fade 0.5s forwards ease-out;
+            color: #ccc; /* Cookie color */
+        }
+
+        @keyframes shatter-fade {
+            0% { opacity: 1; transform: translate(0,0) rotate(0deg); }
+            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); }
+        }
+
+
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div id="custom-cursor"></div>
+
+    <!-- Animated Grid Background Canvas -->
+    <canvas id="grid-canvas"></canvas>
+
+    <!-- Bubbles -->
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+
+    <div class="relative min-h-screen flex flex-col items-center justify-center p-4">
+        <!-- Header -->
+        <header class="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between py-6 z-10">
+            <h1 id="hero-title" class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-var(--accent-color) tracking-wide mb-4 md:mb-0 text-center">
+                <span data-lang-key="heroTitle">IT ПРОРОЦТВА З КРЕМНІЄВОЇ ДОЛИНИ</span>
+            </h1>
+            <div class="flex items-center space-x-4">
+                <!-- Language Switch -->
+                <div class="flex bg-gray-800 rounded-lg p-1">
+                    <button id="lang-uk" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200" data-lang="uk">УКР</button>
+                    <button id="lang-en" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200" data-lang="en">ENG</button>
+                </div>
+                <!-- Color Palette Switch -->
+                <div class="flex space-x-2">
+                    <button class="w-8 h-8 rounded-full bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" data-color="#10B981"></button>
+                    <button class="w-8 h-8 rounded-full bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-color="#3B82F6"></button>
+                    <button class="w-8 h-8 rounded-full bg-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500" data-color="#A855F7"></button>
+                    <button class="w-8 h-8 rounded-full bg-orange-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500" data-color="#F97316"></button>
+                    <button class="w-8 h-8 rounded-full bg-pink-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500" data-color="#EC4899"></button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+
+            <!-- Section 1: When to Vacation? -->
+            <section class="bento-box col-span-1 md:col-span-2 lg:col-span-1 flex flex-col justify-between" data-section-id="vacation">
+                <h2 class="text-3xl font-bold mb-4 text-center text-var(--accent-color)" data-lang-key="vacationTitle">Коли у відпустку?</h2>
+                <p class="text-var(--text-secondary) mb-6 text-center" data-lang-key="vacationDesc">Отримайте гумористичні рекомендації щодо відпустки, адаптовані до вашої ІТ-ролі.</p>
+                <div class="relative mb-6">
+                    <input type="text" id="position-input" class="input-field w-full" placeholder="Frontend Developer, DevOps..." data-lang-key="vacationPlaceholder">
+                    <span id="magic-wand-icon" class="magic-wand hidden">✨</span>
+                </div>
+                <button id="ask-oracle-btn" class="btn-primary w-full" data-lang-key="vacationButton">Запитати оракула</button>
+                <div id="vacation-result" class="mt-4 p-4 rounded-lg bg-gray-900/50 text-center hidden">
+                    <p class="text-var(--text-light)"></p>
+                </div>
+            </section>
+
+            <!-- Section 2: IT Tarot -->
+            <section class="bento-box col-span-1 flex flex-col justify-between" data-section-id="tarot">
+                <h2 class="text-3xl font-bold mb-4 text-center text-var(--accent-color)" data-lang-key="tarotTitle">ІТ Таро</h2>
+                <p class="text-var(--text-secondary) mb-6 text-center" data-lang-key="tarotDesc">Оберіть карту та отримайте передбачення для вашої ІТ-кар'єри.</p>
+                <div id="tarot-cards-container" class="flex justify-around items-center mb-6 h-64">
+                    <!-- Tarot cards will be inserted here by JS -->
+                </div>
+                <button id="shuffle-tarot-btn" class="btn-primary w-full" data-lang-key="tarotShuffle">Перетасувати колоду</button>
+            </section>
+
+            <!-- Section 3: Fortune Cookie -->
+            <section class="bento-box col-span-1 flex flex-col justify-between" data-section-id="cookie">
+                <h2 class="text-3xl font-bold mb-4 text-center text-var(--accent-color)" data-lang-key="cookieTitle">Печиво з пророцтвом</h2>
+                <p class="text-var(--text-secondary) mb-6 text-center" data-lang-key="cookieDesc">Розбийте печиво та відкрийте коротке, дотепне передбачення.</p>
+                <div class="relative flex justify-center items-center h-40 mb-6">
+                    <img id="fortune-cookie-img" src="https://placehold.co/150x100/A0522D/FFFFFF?text=COOKIE" alt="Fortune Cookie" class="cursor-pointer transition-transform duration-300 transform hover:scale-105">
+                </div>
+                <button id="break-cookie-btn" class="btn-primary w-full" data-lang-key="cookieButton">Зламати печиво</button>
+                <div id="cookie-fortune-result" class="mt-4 p-4 rounded-lg bg-gray-900/50 text-center hidden">
+                    <p class="text-var(--text-light)"></p>
+                </div>
+            </section>
+
+            <!-- Section 4: Monthly Horoscope -->
+            <section class="bento-box col-span-1 md:col-span-2 flex flex-col" data-section-id="horoscope">
+                <h2 class="text-3xl font-bold mb-4 text-center text-var(--accent-color)" data-lang-key="horoscopeTitle">Гороскоп на місяць</h2>
+                <p class="text-var(--text-secondary) mb-6 text-center" data-lang-key="horoscopeDesc">Отримайте щомісячний ІТ-гороскоп для вашого знаку зодіаку.</p>
+                <div class="flex flex-col md:flex-row gap-4 mb-6">
+                    <div class="flex-1">
+                        <div class="text-center font-bold text-lg mb-2" id="current-month-display"></div>
+                        <div class="calendar-grid" id="horoscope-calendar">
+                            <!-- Calendar days will be inserted here -->
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col">
+                        <select id="zodiac-sign-select" class="input-field w-full mb-4">
+                            <!-- Options will be populated by JS -->
+                        </select>
+                        <button id="get-horoscope-btn" class="btn-primary w-full" data-lang-key="horoscopeButton">Отримати гороскоп</button>
+                    </div>
+                </div>
+                <div id="horoscope-result" class="mt-4 p-4 rounded-lg bg-gray-900/50 text-center hidden">
+                    <p class="text-var(--text-light)"></p>
+                </div>
+            </section>
+
+            <!-- Section 5: Your Totem Animal -->
+            <section class="bento-box col-span-1 flex flex-col justify-between relative" data-section-id="totem">
+                <h2 class="text-3xl font-bold mb-4 text-center text-var(--accent-color)" data-lang-key="totemTitle">Ваш тотемний звір</h2>
+                <p class="text-var(--text-secondary) mb-6 text-center" data-lang-key="totemDesc">Відкрийте свого ІТ-тотемного звіра!</p>
+                <div id="totem-animal-display-container" class="relative flex justify-center items-center h-40 mb-6">
+                    <!-- Totem animal will appear here -->
+                </div>
+                <button id="reveal-totem-btn" class="btn-primary w-full" data-lang-key="totemButton">Відкрити свого звіра</button>
+            </section>
+
+            <!-- Section 6: Oracle Echoes (Comments Wall) -->
+            <section class="bento-box col-span-1 md:col-span-2 lg:col-span-1 flex flex-col" data-section-id="comments">
+                <h2 class="text-3xl font-bold mb-4 text-center text-var(--accent-color)" data-lang-key="commentsTitle">Відлуння Оракула</h2>
+                <p class="text-var(--text-secondary) mb-6 text-center" data-lang-key="commentsDesc">Поділіться своїми думками про передбачення.</p>
+                <div id="comments-list" class="flex-grow overflow-y-auto max-h-96 pr-2 custom-scrollbar">
+                    <!-- Comments will be loaded here -->
+                    <p class="text-var(--text-secondary) text-center" data-lang-key="commentsLoading">Завантаження коментарів...</p>
+                </div>
+                <div class="mt-4 text-sm text-var(--text-secondary) text-center">
+                    <span data-lang-key="yourId">Ваш ID:</span> <span id="user-id-display">Завантаження...</span>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Comment Modal -->
+        <div id="comment-modal" class="modal">
+            <div class="modal-content">
+                <h3 class="text-2xl font-bold mb-4 text-center text-var(--accent-color)" data-lang-key="modalTitle">Залишити відгук</h3>
+                <p class="text-var(--text-secondary) mb-4 text-center" data-lang-key="modalDesc">Ваш коментар з'явиться на стіні Оракула.</p>
+                <textarea id="comment-text" class="input-field w-full h-32 mb-4 resize-none" placeholder="Ваше пророцтво... (Наприклад: 'Моє передбачення було дивно точним!')" data-lang-key="modalPlaceholder"></textarea>
+                <div class="flex justify-end space-x-4">
+                    <button id="cancel-comment-btn" class="btn-primary bg-gray-700 text-white hover:bg-gray-600" data-lang-key="modalCancel">Скасувати</button>
+                    <button id="submit-comment-btn" class="btn-primary" data-lang-key="modalSubmit">Надіслати</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Tone.js CDN
+        import * as Tone from "https://cdn.skypack.dev/tone"; // Import everything from Tone.js
+
+        // Global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app, db, auth;
+        let userId = 'loading...';
+        let isAuthReady = false;
+
+        // --- Firebase Initialization and Authentication ---
+        const initializeFirebase = async () => {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        document.getElementById('user-id-display').textContent = userId;
+                    } else {
+                        // Sign in anonymously if no token is provided or user logs out
+                        if (initialAuthToken) {
+                            try {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } catch (error) {
+                                console.error("Firebase custom token sign-in failed:", error);
+                                await signInAnonymously(auth); // Fallback to anonymous
+                            }
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    }
+                    isAuthReady = true;
+                    console.log("Firebase Auth Ready. User ID:", userId);
+                    setupFirestoreListeners(); // Setup listeners after auth is ready
+                });
+
+            } catch (error) {
+                console.error("Failed to initialize Firebase:", error);
+                document.getElementById('user-id-display').textContent = 'Error';
+            }
+        };
+
+        // --- State Management ---
+        let currentLang = 'uk';
+        const langData = {
+            uk: {
+                heroTitle: 'ІТ ПРОРОЦТВА З КРЕМНІЄВОЇ ДОЛИНИ',
+                vacationTitle: 'Коли у відпустку?',
+                vacationDesc: 'Отримайте гумористичні рекомендації щодо відпустки, адаптовані до вашої ІТ-ролі.',
+                vacationPlaceholder: 'Frontend Developer, DevOps...',
+                vacationButton: 'Запитати оракула',
+                tarotTitle: 'ІТ Таро',
+                tarotDesc: 'Оберіть карту та отримайте передбачення для вашої ІТ-кар\'єри.',
+                tarotShuffle: 'Перетасувати колоду',
+                cookieTitle: 'Печиво з пророцтвом',
+                cookieDesc: 'Розбийте печиво та відкрийте коротке, дотепне передбачення.',
+                cookieButton: 'Зламати печиво',
+                horoscopeTitle: 'Гороскоп на місяць',
+                horoscopeDesc: 'Отримайте щомісячний ІТ-гороскоп для вашого знаку зодіаку.',
+                horoscopeButton: 'Отримати гороскоп',
+                totemTitle: 'Ваш тотемний звір',
+                totemDesc: 'Відкрийте свого ІТ-тотемного звіра!',
+                totemButton: 'Відкрити свого звіра',
+                commentsTitle: 'Відлуння Оракула',
+                commentsDesc: 'Поділіться своїми думками про передбачення.',
+                commentsLoading: 'Завантаження коментарів...',
+                yourId: 'Ваш ID:',
+                modalTitle: 'Залишити відгук',
+                modalDesc: 'Ваш коментар з\'явиться на стіні Оракула.',
+                modalPlaceholder: 'Ваше пророцтво... (Наприклад: \'Моє передбачення було дивно точним!\')',
+                modalCancel: 'Скасувати',
+                modalSubmit: 'Надіслати',
+                jan: 'Січ', feb: 'Лют', mar: 'Бер', apr: 'Кві', may: 'Тра', jun: 'Чер', jul: 'Лип', aug: 'Сер', sep: 'Вер', oct: 'Жов', nov: 'Лис', dec: 'Гру',
+                mon: 'Пн', tue: 'Вт', wed: 'Ср', thu: 'Чт', fri: 'Пт', sat: 'Сб', sun: 'Нд',
+                // Zodiac signs with IT-themed names and emojis
+                aries: '♈ Овен (Спритний Баг)', taurus: '♉ Телець (Надійний Сервер)', gemini: '♊ Близнюки (Розділений Мікросервіс)', cancer: '♋ Рак (Прихований Залежність)',
+                leo: '♌ Лев (Головний Реліз)', virgo: '♍ Діва (Педантичний Тестувальник)', libra: '♎ Терези (Збалансований Фреймворк)', scorpio: '♏ Скорпіон (Глибокий Дебагер)',
+                sagittarius: '♐ Стрілець (Далекоглядний Архітектор)', capricorn: '♑ Козоріг (Стабільний Репозиторій)', aquarius: '♒ Водолій (Інноваційний Стартапер)', pisces: '♓ Риби (Потік Даних)',
+                loading: 'Завантаження...',
+                vacationResultBest: 'Найкращий час: ',
+                vacationResultWorst: 'Найгірший час: ',
+                tarotInterpretation: 'Ваше передбачення: ',
+                cookieFortune: 'Ваше печиво з пророцтвом: ',
+                horoscopeResult: 'Ваш ІТ-гороскоп на місяць: '
+            },
+            en: {
+                heroTitle: 'IT PROPHECIES FROM SILICON VALLEY',
+                vacationTitle: 'When to Vacation?',
+                vacationDesc: 'Get humorous vacation advice tailored to your IT role.',
+                vacationPlaceholder: 'Frontend Developer, DevOps...',
+                vacationButton: 'Ask the Oracle',
+                tarotTitle: 'IT Tarot',
+                tarotDesc: 'Pick a card and get a prophecy for your IT career.',
+                tarotShuffle: 'Shuffle Deck',
+                cookieTitle: 'Fortune Cookie',
+                cookieDesc: 'Break the cookie and reveal a short, witty prophecy.',
+                cookieButton: 'Break Cookie',
+                horoscopeTitle: 'Monthly Horoscope',
+                horoscopeDesc: 'Get your monthly IT horoscope for your zodiac sign.',
+                horoscopeButton: 'Get Horoscope',
+                totemTitle: 'Your Totem Animal',
+                totemDesc: 'Uncover your IT totem animal!',
+                totemButton: 'Reveal Your Animal',
+                commentsTitle: 'Oracle Echoes',
+                commentsDesc: 'Share your thoughts on the prophecies.',
+                commentsLoading: 'Loading comments...',
+                yourId: 'Your ID:',
+                modalTitle: 'Leave a Comment',
+                modalDesc: 'Your comment will appear on the Oracle wall.',
+                modalPlaceholder: 'Your prophecy... (e.g., \'My prediction was eerily accurate!\')',
+                modalCancel: 'Cancel',
+                modalSubmit: 'Submit',
+                jan: 'Jan', feb: 'Feb', mar: 'Mar', apr: 'Apr', may: 'May', jun: 'Jun', jul: 'Jul', aug: 'Aug', sep: 'Sep', oct: 'Oct', nov: 'Nov', dec: 'Dec',
+                mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun',
+                // Zodiac signs with IT-themed names and emojis
+                aries: '♈ Aries (Agile Bug)', taurus: '♉ Taurus (Reliable Server)', gemini: '♊ Gemini (Split Microservice)', cancer: '♋ Cancer (Hidden Dependency)',
+                leo: '♌ Leo (Main Release)', virgo: '♍ Virgo (Meticulous Tester)', libra: '♎ Libra (Balanced Framework)', scorpio: '♏ Scorpio (Deep Debugger)',
+                sagittarius: '♐ Sagittarius (Visionary Architect)', capricorn: '♑ Capricorn (Stable Repository)', aquarius: '♒ Aquarius (Innovative Startup)', pisces: '♓ Pisces (Data Stream)',
+                loading: 'Loading...',
+                vacationResultBest: 'Best time: ',
+                vacationResultWorst: 'Worst time: ',
+                tarotInterpretation: 'Your prophecy: ',
+                cookieFortune: 'Your fortune cookie says: ',
+                horoscopeResult: 'Your IT monthly horoscope: '
+            }
+        };
+
+        const updateContentLanguage = (lang) => {
+            document.querySelectorAll('[data-lang-key]').forEach(element => {
+                const key = element.getAttribute('data-lang-key');
+                if (langData[lang][key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = langData[lang][key];
+                    } else {
+                        element.textContent = langData[lang][key];
+                    }
+                }
+            });
+
+            // Update zodiac sign options
+            const zodiacSelect = document.getElementById('zodiac-sign-select');
+            if (zodiacSelect) {
+                zodiacSelect.innerHTML = ''; // Clear existing options
+                const signs = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'];
+                signs.forEach(sign => {
+                    const option = document.createElement('option');
+                    option.value = sign;
+                    option.textContent = langData[lang][sign]; // Now includes emoji
+                    zodiacSelect.appendChild(option);
+                });
+            }
+
+            // Update calendar month and day names
+            renderCalendar();
+        };
+
+        // --- Sound Effects (Tone.js) ---
+        let polySynth = null;
+        let isToneStarted = false;
+
+        const startTone = async () => {
+            if (!isToneStarted) {
+                await Tone.start();
+                polySynth = new Tone.PolySynth(Tone.Synth).toDestination();
+                console.log("Tone.js audio context started!");
+                isToneStarted = true;
+            }
+        };
+
+        // Notes for various sound effects (Harry Potter inspired)
+        const sounds = {
+            click: [
+                { note: "C4", time: "0", duration: "32n" },
+                { note: "G4", time: "+0.05", duration: "32n" }
+            ],
+            generate: [ // Hedwig's Theme opening snippet
+                { note: "D4", time: "0", duration: "8n" },
+                { note: "G4", time: "+0.2", duration: "8n" },
+                { note: "Bb4", time: "+0.4", duration: "8n" },
+                { note: "A4", time: "+0.6", duration: "8n" }
+            ],
+            flip: [ // Quick magical flourish
+                { note: "C5", time: "0", duration: "64n" },
+                { note: "Eb5", time: "+0.05", duration: "64n" },
+                { note: "G5", time: "+0.1", duration: "32n" }
+            ],
+            break: [ // More percussive, breaking sound
+                { note: "F#2", time: "0", duration: "16n" },
+                { note: "C2", time: "0", duration: "16n" },
+                { note: "D2", time: "0.05", duration: "16n" }
+            ],
+            reveal: [ // Ascending magical reveal
+                { note: "C4", time: "0", duration: "16n" },
+                { note: "E4", time: "+0.1", duration: "16n" },
+                { note: "G4", time: "+0.2", duration: "16n" },
+                { note: "C5", time: "+0.3", duration: "8n" }
+            ]
+        };
+
+        const playSound = async (type) => {
+            await startTone(); // Ensure audio context is started
+
+            if (!polySynth) {
+                console.warn("Tone.js synth not initialized. Cannot play sound.");
+                return;
+            }
+
+            const notesToPlay = sounds[type];
+            if (!notesToPlay) {
+                console.warn(`Sound type "${type}" not found.`);
+                return;
+            }
+
+            // Schedule notes
+            notesToPlay.forEach(noteData => {
+                polySynth.triggerAttackRelease(noteData.note, noteData.duration, Tone.now() + Tone.Time(noteData.time).toSeconds());
+            });
+        };
+
+        // --- Custom Cursor ---
+        const customCursor = document.getElementById('custom-cursor');
+        document.addEventListener('mousemove', (e) => {
+            customCursor.style.left = `${e.clientX}px`;
+            customCursor.style.top = `${e.clientY}px`;
+        });
+
+        document.querySelectorAll('button, input, select, .tarot-card, #fortune-cookie-img').forEach(el => {
+            el.addEventListener('mouseover', () => customCursor.classList.add('interactive'));
+            el.addEventListener('mouseout', () => customCursor.classList.remove('interactive'));
+        });
+
+
+        // --- Animated Grid Background (Canvas) ---
+        const canvas = document.getElementById('grid-canvas');
+        const ctx = canvas.getContext('2d');
+        let mouseX = 0, mouseY = 0;
+
+        const resizeCanvas = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas(); // Initial resize
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        const drawGrid = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const gridSize = 40; // Size of each grid cell
+
+            // Set a base line color
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 0.5;
+
+            // Draw vertical lines
+            for (let x = 0; x < canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+
+            // Draw horizontal lines
+            for (let y = 0; y < canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+
+            // Create a glow effect around the cursor
+            const gradient = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 150);
+            const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color');
+            gradient.addColorStop(0, `${accentColor}`);
+            gradient.addColorStop(0.5, `${accentColor}50`); /* 50% opacity */
+            gradient.addColorStop(1, 'transparent');
+
+            ctx.globalCompositeOperation = 'lighter'; // Blending mode
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(mouseX, mouseY, 150, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over'; // Reset blending mode
+        };
+
+        const animateGrid = () => {
+            drawGrid();
+            requestAnimationFrame(animateGrid);
+        };
+        animateGrid();
+
+        // --- Hero Title Animation ---
+        const heroTitleElement = document.getElementById('hero-title');
+        const originalText = heroTitleElement.textContent;
+        heroTitleElement.innerHTML = ''; // Clear original text
+
+        const animateHeroTitle = (text) => {
+            heroTitleElement.innerHTML = ''; // Clear for new language
+            Array.from(text).forEach((char, index) => {
+                const span = document.createElement('span');
+                span.textContent = char;
+                span.style.animationDelay = `${index * 0.05}s`; // Staggered animation
+                heroTitleElement.appendChild(span);
+            });
+        };
+
+        // --- Language and Color Switch ---
+        document.getElementById('lang-uk').addEventListener('click', () => {
+            currentLang = 'uk';
+            updateContentLanguage('uk');
+            document.getElementById('lang-uk').classList.add('bg-gray-700', 'text-white');
+            document.getElementById('lang-en').classList.remove('bg-gray-700', 'text-white');
+            animateHeroTitle(langData[currentLang].heroTitle);
+        });
+
+        document.getElementById('lang-en').addEventListener('click', () => {
+            currentLang = 'en';
+            updateContentLanguage('en');
+            document.getElementById('lang-en').classList.add('bg-gray-700', 'text-white');
+            document.getElementById('lang-uk').classList.remove('bg-gray-700', 'text-white');
+            animateHeroTitle(langData[currentLang].heroTitle);
+        });
+
+        document.querySelectorAll('[data-color]').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const newColor = e.target.dataset.color;
+                document.documentElement.style.setProperty('--accent-color', newColor);
+                // Update RGB for box-shadow
+                const rgb = hexToRgb(newColor);
+                document.documentElement.style.setProperty('--accent-color-rgb-r', rgb.r);
+                document.documentElement.style.setProperty('--accent-color-rgb-g', rgb.g);
+                document.documentElement.style.setProperty('--accent-color-rgb-b', rgb.b);
+                playSound('click');
+            });
+        });
+
+        function hexToRgb(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return { r, g, b };
+        }
+
+        // Initialize accent color RGB
+        const initialAccentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color');
+        const initialRgb = hexToRgb(initialAccentColor);
+        document.documentElement.style.setProperty('--accent-color-rgb-r', initialRgb.r);
+        document.documentElement.style.setProperty('--accent-color-rgb-g', initialRgb.g);
+        document.documentElement.style.setProperty('--accent-color-rgb-b', initialRgb.b);
+
+
+        // --- Gemini API Call Function ---
+        const callGeminiAPI = async (prompt, schema = null) => {
+            try {
+                const chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                const payload = { contents: chatHistory };
+
+                if (schema) {
+                    payload.generationConfig = {
+                        responseMimeType: "application/json",
+                        responseSchema: schema
+                    };
+                }
+
+                const apiKey = ""; // Canvas will provide at runtime
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API error: ${response.status} - ${errorText}`);
+                }
+
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const textResult = result.candidates[0].content.parts[0].text;
+                    if (schema) {
+                        try {
+                            return JSON.parse(textResult);
+                        } catch (e) {
+                            console.error("Failed to parse JSON from Gemini API:", e, "Raw text:", textResult);
+                            throw new Error("Invalid JSON response from API.");
+                        }
+                    }
+                    return textResult;
+                } else {
+                    console.warn("Unexpected Gemini API response structure:", result);
+                    throw new Error("No valid content found in API response.");
+                }
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                return `Помилка: ${error.message}. Спробуйте ще раз.`; // Display a user-friendly error message
+            }
+        };
+
+        // --- Sections Functionality ---
+
+        // Section 1: When to Vacation?
+        const positionInput = document.getElementById('position-input');
+        const askOracleBtn = document.getElementById('ask-oracle-btn');
+        const vacationResultDiv = document.getElementById('vacation-result');
+        const magicWandIcon = document.getElementById('magic-wand-icon');
+
+        askOracleBtn.addEventListener('click', async () => {
+            playSound('click');
+            const position = positionInput.value.trim();
+            if (!position) {
+                vacationResultDiv.classList.remove('hidden');
+                vacationResultDiv.querySelector('p').textContent = currentLang === 'uk' ? 'Будь ласка, введіть вашу посаду.' : 'Please enter your position.';
+                return;
+            }
+
+            vacationResultDiv.classList.remove('hidden');
+            vacationResultDiv.querySelector('p').textContent = langData[currentLang].loading;
+            askOracleBtn.disabled = true;
+
+            // Magic wand animation
+            const buttonRect = askOracleBtn.getBoundingClientRect();
+            magicWandIcon.style.left = `${buttonRect.left + buttonRect.width / 2}px`;
+            magicWandIcon.style.top = `${buttonRect.top + buttonRect.height / 2}px`;
+            magicWandIcon.classList.remove('hidden');
+            magicWandIcon.style.animation = 'none'; // Reset animation
+            void magicWandIcon.offsetWidth; // Trigger reflow
+            magicWandIcon.style.animation = 'magic-wand-anim 1s forwards ease-out';
+
+            playSound('generate');
+
+            const prompt = currentLang === 'uk'
+                ? `Створіть гумористичні та дотепні рекомендації щодо найкращого та найгіршого часу для відпустки для ІТ-фахівця на посаді "${position}". Використовуйте ІТ-жарти та специфіку роботи. Формат: JSON з полями "bestTime" і "worstTime".`
+                : `Generate humorous and witty recommendations for the best and worst times for a vacation for an IT professional in the role of "${position}". Use IT jokes and work specifics. Format: JSON with "bestTime" and "worstTime" fields.`;
+
+            const schema = {
+                type: "OBJECT",
+                properties: {
+                    bestTime: { "type": "STRING" },
+                    worstTime: { "type": "STRING" }
+                },
+                propertyOrdering: ["bestTime", "worstTime"]
+            };
+
+            const result = await callGeminiAPI(prompt, schema);
+
+            if (typeof result === 'object' && result.bestTime && result.worstTime) {
+                vacationResultDiv.querySelector('p').innerHTML =
+                    `<strong class="text-var(--accent-color)">${langData[currentLang].vacationResultBest}</strong>${result.bestTime}<br><br>` +
+                    `<strong class="text-var(--accent-color)">${langData[currentLang].vacationResultWorst}</strong>${result.worstTime}`;
+            } else {
+                vacationResultDiv.querySelector('p').textContent = result; // Display error message or raw text
+            }
+            askOracleBtn.disabled = false;
+            setTimeout(() => {
+                magicWandIcon.classList.add('hidden');
+                showCommentModal('vacation');
+            }, 1000); // Hide wand after animation
+        });
+
+        // Section 2: IT Tarot
+        const tarotCardsContainer = document.getElementById('tarot-cards-container');
+        const shuffleTarotBtn = document.getElementById('shuffle-tarot-btn');
+
+        const tarotCards = [
+            { id: 'tester', emoji: '🕵️', name: { uk: 'Тестувальник', en: 'The Tester' } },
+            { id: 'bug', emoji: '🐛', name: { uk: 'Глюк', en: 'The Bug' } },
+            { id: 'release', emoji: '🚀', name: { uk: 'Реліз', en: 'The Release' } },
+            { id: 'debugger', emoji: '🐞', name: { uk: 'Дебагер', en: 'The Debugger' } },
+            { id: 'compiler', emoji: '🤖', name: { uk: 'Компілятор', en: 'The Compiler' } },
+            { id: 'mergeConflict', emoji: '💥', name: { uk: 'Конфлікт злиття', en: 'The Merge Conflict' } },
+            { id: 'database', emoji: '🗄️', name: { uk: 'База даних', en: 'The Database' } },
+            { id: 'cloud', emoji: '☁️', name: { uk: 'Хмара', en: 'The Cloud' } }
+        ];
+
+        let selectedTarotCards = [];
+        let flippedCardIds = new Set();
+
+        const renderTarotCards = () => {
+            tarotCardsContainer.innerHTML = '';
+            flippedCardIds.clear(); // Reset flipped state on re-render
+
+            // Shuffle and pick 3 unique cards
+            const shuffled = [...tarotCards].sort(() => 0.5 - Math.random());
+            selectedTarotCards = shuffled.slice(0, 3);
+
+            selectedTarotCards.forEach(card => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'tarot-card-container';
+                cardDiv.innerHTML = `
+                    <div class="tarot-card" data-card-id="${card.id}">
+                        <div class="tarot-card-face tarot-card-front">
+                            ${card.emoji}
+                        </div>
+                        <div class="tarot-card-face tarot-card-back">
+                            <p class="card-interpretation text-sm"></p>
+                        </div>
+                    </div>
+                `;
+                tarotCardsContainer.appendChild(cardDiv);
+
+                cardDiv.querySelector('.tarot-card').addEventListener('click', handleCardClick);
+            });
+        };
+
+        const handleCardClick = async (event) => {
+            const cardElement = event.currentTarget;
+            const cardId = cardElement.dataset.cardId;
+
+            if (flippedCardIds.has(cardId)) {
+                return; // Prevent re-flipping
+            }
+
+            playSound('flip');
+
+            cardElement.classList.add('flipped');
+            flippedCardIds.add(cardId);
+
+            const cardData = selectedTarotCards.find(c => c.id === cardId);
+            const cardName = cardData.name[currentLang];
+            const interpretationElement = cardElement.querySelector('.card-interpretation');
+            interpretationElement.textContent = langData[currentLang].loading;
+
+            const prompt = currentLang === 'uk'
+                ? `Надайте коротку, дотепну та гумористичну інтерпретацію ІТ-карти Таро "${cardName}" для ІТ-фахівця. Зосередьтеся на кар'єрних аспектах та ІТ-жартах.`
+                : `Provide a brief, witty, and humorous interpretation of the IT Tarot card "${cardName}" for an IT professional. Focus on career aspects and IT jokes.`;
+
+            const result = await callGeminiAPI(prompt);
+            interpretationElement.textContent = `${langData[currentLang].tarotInterpretation}${result}`;
+            showCommentModal('tarot');
+        };
+
+        shuffleTarotBtn.addEventListener('click', () => {
+            playSound('click');
+            renderTarotCards();
+        });
+
+        // Section 3: Fortune Cookie
+        const fortuneCookieImg = document.getElementById('fortune-cookie-img');
+        const breakCookieBtn = document.getElementById('break-cookie-btn');
+        const cookieFortuneResultDiv = document.getElementById('cookie-fortune-result');
+
+        breakCookieBtn.addEventListener('click', async () => {
+            playSound('click');
+            cookieFortuneResultDiv.classList.remove('hidden');
+            cookieFortuneResultDiv.querySelector('p').textContent = langData[currentLang].loading;
+            breakCookieBtn.disabled = true;
+            fortuneCookieImg.style.opacity = '0'; // Hide the cookie image immediately
+
+            // Generate shatter particles
+            for (let i = 0; i < 5; i++) {
+                const part = document.createElement('span');
+                part.textContent = '🍪'; // Using emoji for cookie fragments
+                part.className = 'cookie-shatter-part';
+                const x = fortuneCookieImg.offsetLeft + fortuneCookieImg.offsetWidth / 2;
+                const y = fortuneCookieImg.offsetTop + fortuneCookieImg.offsetHeight / 2;
+                part.style.left = `${x}px`;
+                part.style.top = `${y}px`;
+                part.style.setProperty('--dx', `${(Math.random() - 0.5) * 200}px`);
+                part.style.setProperty('--dy', `${(Math.random() - 0.5) * 200}px`);
+                part.style.setProperty('--rot', `${Math.random() * 360}deg`);
+                document.body.appendChild(part);
+                setTimeout(() => part.remove(), 500); // Remove after animation
+            }
+
+            playSound('break');
+
+            const prompt = currentLang === 'uk'
+                ? `Згенеруйте одне коротке, дотепне передбачення для ІТ-фахівця в стилі печива з пророцтвом, використовуючи ІТ-жарти.`
+                : `Generate one short, witty fortune for an IT professional in the style of a fortune cookie, incorporating IT humor.`;
+
+            const result = await callGeminiAPI(prompt);
+            cookieFortuneResultDiv.querySelector('p').textContent = `${langData[currentLang].cookieFortune}${result}`;
+            breakCookieBtn.disabled = false;
+            fortuneCookieImg.style.opacity = '1'; // Make cookie visible again for next interaction
+            showCommentModal('cookie');
+        });
+
+        // Section 4: Monthly Horoscope
+        const horoscopeCalendar = document.getElementById('horoscope-calendar');
+        const currentMonthDisplay = document.getElementById('current-month-display');
+        const zodiacSignSelect = document.getElementById('zodiac-sign-select');
+        const getHoroscopeBtn = document.getElementById('get-horoscope-btn');
+        const horoscopeResultDiv = document.getElementById('horoscope-result');
+
+        const renderCalendar = () => {
+            horoscopeCalendar.innerHTML = '';
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth(); // 0-indexed
+
+            const monthNames = [
+                langData[currentLang].jan, langData[currentLang].feb, langData[currentLang].mar,
+                langData[currentLang].apr, langData[currentLang].may, langData[currentLang].jun,
+                langData[currentLang].jul, langData[currentLang].aug, langData[currentLang].sep,
+                langData[currentLang].oct, langData[currentLang].nov, langData[currentLang].dec
+            ];
+            const dayNames = [
+                langData[currentLang].sun, langData[currentLang].mon, langData[currentLang].tue,
+                langData[currentLang].wed, langData[currentLang].thu, langData[currentLang].fri, langData[currentLang].sat
+            ];
+
+            currentMonthDisplay.textContent = `${monthNames[month]} ${year}`;
+
+            // Add day names headers
+            dayNames.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-day calendar-header';
+                header.textContent = day;
+                horoscopeCalendar.appendChild(header);
+            });
+
+            // Get first day of the month and number of days
+            const firstDayOfMonth = new Date(year, month, 1).getDay(); // 0 for Sunday, 1 for Monday etc.
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Fill leading empty days
+            const startDayIndex = (firstDayOfMonth === 0) ? 6 : firstDayOfMonth - 1; // Adjust so Monday is 0
+            for (let i = 0; i < startDayIndex; i++) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'calendar-day';
+                horoscopeCalendar.appendChild(emptyDiv);
+            }
+
+            // Fill days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+                dayDiv.textContent = day;
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    dayDiv.classList.add('current-day');
+                }
+                horoscopeCalendar.appendChild(dayDiv);
+            }
+        };
+
+        getHoroscopeBtn.addEventListener('click', async () => {
+            playSound('click');
+            const selectedSign = zodiacSignSelect.value;
+            if (!selectedSign) {
+                horoscopeResultDiv.classList.remove('hidden');
+                horoscopeResultDiv.querySelector('p').textContent = currentLang === 'uk' ? 'Будь ласка, виберіть знак зодіаку.' : 'Please select a zodiac sign.';
+                return;
+            }
+
+            horoscopeResultDiv.classList.remove('hidden');
+            horoscopeResultDiv.querySelector('p').textContent = langData[currentLang].loading;
+            getHoroscopeBtn.disabled = true;
+
+            playSound('generate');
+
+            // The zodiac sign text with emoji is already in langData[currentLang][selectedSign]
+            const signNameWithEmoji = langData[currentLang][selectedSign];
+            const prompt = currentLang === 'uk'
+                ? `Згенеруйте короткий, гумористичний щомісячний гороскоп для ІТ-фахівця зі знаком зодіаку "${signNameWithEmoji}". Включіть ІТ-жарти та передбачення щодо кар'єри, багів, дедлайнів тощо.`
+                : `Generate a short, humorous monthly horoscope for an IT professional with the zodiac sign "${signNameWithEmoji}". Include IT jokes and predictions about career, bugs, deadlines, etc.`;
+
+            const result = await callGeminiAPI(prompt);
+            horoscopeResultDiv.querySelector('p').textContent = `${langData[currentLang].horoscopeResult}${result}`;
+            getHoroscopeBtn.disabled = false;
+            showCommentModal('horoscope');
+        });
+
+        // Section 5: Your Totem Animal
+        const revealTotemBtn = document.getElementById('reveal-totem-btn');
+        const totemAnimalDisplayContainer = document.getElementById('totem-animal-display-container');
+
+        const totemAnimals = [
+            { emoji: '🐉', name: { uk: 'Дракон (Компілятор)', en: 'Dragon (The Compiler)' } },
+            { emoji: '🦉', name: { uk: 'Сова (Нічний Девелопер)', en: 'Owl (Night Owl Developer)' } },
+            { emoji: '🐜', name: { uk: 'Мураха (Організований Рефакторинг)', en: 'Ant (Organized Refactor)' } },
+            { emoji: '�', name: { uk: 'Єдиноріг (Рідкісний QA)', en: 'Unicorn (Rare QA)' } },
+            { emoji: '🦊', name: { uk: 'Лисиця (Хитрий Оптимізатор)', en: 'Fox (Clever Optimizer)' } },
+            { emoji: '🕷️', name: { uk: 'Павук (Мережевий Архітектор)', en: 'Spider (Network Architect)' } },
+            { emoji: '🐧', name: { uk: 'Пінгвін (Адміністратор Linux)', en: 'Penguin (Linux Admin)' } },
+            { emoji: '🐙', name: { uk: 'Восьминіг (Багатозадачний Фронтенд)', en: 'Octopus (Multitasking Frontend)' } }
+        ];
+
+        revealTotemBtn.addEventListener('click', () => {
+            playSound('click');
+            revealTotemBtn.disabled = true;
+
+            const randomIndex = Math.floor(Math.random() * totemAnimals.length);
+            const selectedAnimal = totemAnimals[randomIndex];
+
+            const animalDiv = document.createElement('div');
+            animalDiv.className = 'totem-animal-display';
+            animalDiv.textContent = selectedAnimal.emoji;
+
+            // Positioning for animation (start from left)
+            animalDiv.style.position = 'absolute';
+            animalDiv.style.left = '-10%';
+            animalDiv.style.top = '50%';
+            animalDiv.style.transform = 'translateY(-50%)';
+
+            totemAnimalDisplayContainer.innerHTML = ''; // Clear previous
+            totemAnimalDisplayContainer.appendChild(animalDiv);
+
+            // Add text description below the animal after a short delay
+            setTimeout(() => {
+                const descriptionDiv = document.createElement('div');
+                descriptionDiv.className = 'absolute top-[calc(50%+4rem)] text-xl font-bold text-var(--accent-color) text-center w-full';
+                descriptionDiv.textContent = selectedAnimal.name[currentLang];
+                totemAnimalDisplayContainer.appendChild(descriptionDiv);
+            }, 500); // Appear after animal starts moving
+
+            playSound('reveal');
+
+            setTimeout(() => {
+                animalDiv.remove();
+                totemAnimalDisplayContainer.querySelector('.totem-animal-display + div')?.remove(); // Remove description
+                revealTotemBtn.disabled = false;
+                showCommentModal('totem');
+            }, 1500); // Remove after animation
+        });
+
+        // --- Comment Modal Functionality ---
+        const commentModal = document.getElementById('comment-modal');
+        const cancelCommentBtn = document.getElementById('cancel-comment-btn');
+        const submitCommentBtn = document.getElementById('submit-comment-btn');
+        const commentTextarea = document.getElementById('comment-text');
+        let currentSectionIdForComment = null; // To track which section triggered the modal
+
+        const showCommentModal = (sectionId) => {
+            currentSectionIdForComment = sectionId;
+            commentTextarea.value = ''; // Clear previous comment
+            commentModal.classList.add('open');
+            playSound('click');
+        };
+
+        cancelCommentBtn.addEventListener('click', () => {
+            commentModal.classList.remove('open');
+            playSound('click');
+        });
+
+        submitCommentBtn.addEventListener('click', async () => {
+            const comment = commentTextarea.value.trim();
+            if (!comment) {
+                // Optionally show a message to the user that comment cannot be empty
+                console.warn("Comment cannot be empty.");
+                return;
+            }
+
+            if (!isAuthReady || !db || !userId) {
+                console.error("Firebase not initialized or user not authenticated yet.");
+                // Provide user feedback without alert
+                commentTextarea.placeholder = currentLang === 'uk' ? 'Помилка: Не вдалося надіслати коментар. Спробуйте пізніше.' : 'Error: Could not send comment. Try again later.';
+                return;
+            }
+
+            submitCommentBtn.disabled = true;
+            commentTextarea.disabled = true;
+
+            try {
+                // Store comments in a public collection for sharing
+                const commentsRef = collection(db, `artifacts/${appId}/public/data/comments`);
+                await addDoc(commentsRef, {
+                    userId: userId, // Current user's ID
+                    comment: comment,
+                    section: currentSectionIdForComment,
+                    timestamp: serverTimestamp() // Use server timestamp
+                });
+                commentModal.classList.remove('open');
+                commentTextarea.value = '';
+                playSound('click');
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                // Provide user feedback without alert
+                commentTextarea.placeholder = currentLang === 'uk' ? 'Помилка надсилання коментаря.' : 'Error sending comment.';
+            } finally {
+                submitCommentBtn.disabled = false;
+                commentTextarea.disabled = false;
+            }
+        });
+
+
+        // --- Oracle Echoes (Comments Wall) ---
+        const commentsList = document.getElementById('comments-list');
+
+        const setupFirestoreListeners = () => {
+            if (!isAuthReady || !db) {
+                console.log("Firestore not ready for listeners yet.");
+                return;
+            }
+
+            const commentsCollectionRef = collection(db, `artifacts/${appId}/public/data/comments`);
+            const q = query(commentsCollectionRef); // No orderBy here to avoid index errors
+
+            onSnapshot(q, (snapshot) => {
+                commentsList.innerHTML = ''; // Clear existing comments
+                if (snapshot.empty) {
+                    commentsList.textContent = currentLang === 'uk' ? 'Ще немає коментарів. Будьте першими!' : 'No comments yet. Be the first!';
+                    commentsList.classList.add('text-center', 'text-var(--text-secondary)');
+                } else {
+                    commentsList.classList.remove('text-center');
+                    // Sort comments by timestamp client-side for now
+                    const sortedComments = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        sortedComments.push({ id: doc.id, ...data });
+                    });
+
+                    // Sort by timestamp in descending order (newest first)
+                    sortedComments.sort((a, b) => {
+                        if (a.timestamp && b.timestamp) {
+                            return b.timestamp.toDate() - a.timestamp.toDate();
+                        }
+                        return 0; // Handle cases where timestamp might be missing
+                    });
+
+                    sortedComments.forEach(docData => {
+                        const commentDiv = document.createElement('div');
+                        commentDiv.className = 'bg-gray-900/50 p-4 rounded-lg mb-3 shadow-md';
+                        const time = docData.timestamp ? new Date(docData.timestamp.seconds * 1000).toLocaleString(currentLang === 'uk' ? 'uk-UA' : 'en-US') : 'N/A';
+                        commentDiv.innerHTML = `
+                            <p class="text-sm text-var(--text-secondary) mb-1">
+                                <strong class="text-var(--accent-color)">${docData.userId}</strong> 
+                                <span class="ml-2">${time}</span>
+                            </p>
+                            <p class="text-var(--text-light) text-base break-words">${docData.comment}</p>
+                            <p class="text-xs text-gray-500 mt-1">Section: ${docData.section || 'N/A'}</p>
+                        `;
+                        commentsList.appendChild(commentDiv);
+                    });
+                }
+            }, (error) => {
+                console.error("Error listening to comments:", error);
+                commentsList.textContent = currentLang === 'uk' ? 'Помилка завантаження коментарів.' : 'Error loading comments.';
+            });
+        };
+
+        // --- Initial Setup on Window Load ---
+        window.onload = async () => {
+            // Initial language and hero title animation
+            updateContentLanguage(currentLang);
+            document.getElementById('lang-uk').classList.add('bg-gray-700', 'text-white');
+            animateHeroTitle(langData[currentLang].heroTitle);
+
+            renderTarotCards();
+            renderCalendar();
+
+            // Start Tone.js audio context on first user interaction
+            document.body.addEventListener('click', startTone, { once: true });
+            document.body.addEventListener('touchstart', startTone, { once: true });
+
+            await initializeFirebase();
+            // Firestore listener will be set up in `onAuthStateChanged` callback once auth is ready
+        };
+    </script>
+</body>
+</html>
