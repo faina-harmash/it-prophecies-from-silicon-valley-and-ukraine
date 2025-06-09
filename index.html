@@ -294,42 +294,13 @@
             animation: totem-run 1.5s forwards ease-in-out;
         }
 
-        /* Modal Styling */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .modal.open {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background-color: var(--box-bg);
-            padding: 2rem;
-            border-radius: 1.5rem;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-
-        .modal.open .modal-content {
-            transform: scale(1);
-        }
+        /* Removed Comment Modal Styling */
+        /*
+        .modal { ... }
+        .modal.open { ... }
+        .modal-content { ... }
+        .modal.open .modal-content { ... }
+        */
 
         /* Cookie breaking animation */
         @keyframes cookie-break {
@@ -467,22 +438,24 @@
                 <button id="reveal-totem-btn" class="btn-primary w-full" data-lang-key="totemButton">Відкрити свого звіра</button>
             </section>
 
-            <!-- Section 6: Oracle Echoes (Comments Wall) -->
+            <!-- Removed Section 6: Oracle Echoes (Comments Wall) -->
+            <!--
             <section class="bento-box col-span-1 md:col-span-2 lg:col-span-1 flex flex-col" data-section-id="comments">
                 <h2 class="text-3xl font-bold mb-4 text-center text-var(--accent-color)" data-lang-key="commentsTitle">Відлуння Оракула</h2>
                 <p class="text-var(--text-secondary) mb-6 text-center" data-lang-key="commentsDesc">Поділіться своїми думками про передбачення.</p>
                 <div id="comments-list" class="flex-grow overflow-y-auto max-h-96 pr-2 custom-scrollbar">
-                    <!-- Comments will be loaded here -->
                     <p class="text-var(--text-secondary) text-center" data-lang-key="commentsLoading">Завантаження коментарів...</p>
                 </div>
                 <div class="mt-4 text-sm text-var(--text-secondary) text-center">
                     <span data-lang-key="yourId">Ваш ID:</span> <span id="user-id-display">Завантаження...</span>
                 </div>
             </section>
+            -->
 
         </main>
 
-        <!-- Comment Modal -->
+        <!-- Removed Comment Modal -->
+        <!--
         <div id="comment-modal" class="modal">
             <div class="modal-content">
                 <h3 class="text-2xl font-bold mb-4 text-center text-var(--accent-color)" data-lang-key="modalTitle">Залишити відгук</h3>
@@ -494,61 +467,33 @@
                 </div>
             </div>
         </div>
+        -->
 
     </div>
 
-    <!-- Firebase SDKs -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Firebase SDKs are no longer needed without comment functionality
+        // import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Tone.js CDN
         import * as Tone from "https://cdn.skypack.dev/tone"; // Import everything from Tone.js
 
-        // Global variables provided by the Canvas environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // Global variables for Firebase (removed as comment functionality is removed)
+        // const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        // const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        let app, db, auth;
-        let userId = 'loading...';
-        let isAuthReady = false;
+        // Firebase variables are now removed if comments are not used.
+        // If other Firebase services were used, they would be re-evaluated.
+        let app, db, auth; // These can now be removed or set to null if not used elsewhere
+        let userId = 'N/A'; // User ID display can be removed or just show 'N/A'
+        let isAuthReady = true; // No auth needed, so consider it always ready
 
-        // --- Firebase Initialization and Authentication ---
-        const initializeFirebase = async () => {
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        document.getElementById('user-id-display').textContent = userId;
-                    } else {
-                        // Sign in anonymously if no token is provided or user logs out
-                        if (initialAuthToken) {
-                            try {
-                                await signInWithCustomToken(auth, initialAuthToken);
-                            } catch (error) {
-                                console.error("Firebase custom token sign-in failed:", error);
-                                await signInAnonymously(auth); // Fallback to anonymous
-                            }
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                    }
-                    isAuthReady = true;
-                    console.log("Firebase Auth Ready. User ID:", userId);
-                    setupFirestoreListeners(); // Setup listeners after auth is ready
-                });
-
-            } catch (error) {
-                console.error("Failed to initialize Firebase:", error);
-                document.getElementById('user-id-display').textContent = 'Error';
-            }
-        };
+        // --- Firebase Initialization and Authentication (Removed) ---
+        // const initializeFirebase = async () => { ... };
+        // const setupFirestoreListeners = () => { ... };
 
         // --- State Management ---
         let currentLang = 'uk';
@@ -571,15 +516,16 @@
                 totemTitle: 'Ваш тотемний звір',
                 totemDesc: 'Відкрийте свого ІТ-тотемного звіра!',
                 totemButton: 'Відкрити свого звіра',
-                commentsTitle: 'Відлуння Оракула',
-                commentsDesc: 'Поділіться своїми думками про передбачення.',
-                commentsLoading: 'Завантаження коментарів...',
-                yourId: 'Ваш ID:',
-                modalTitle: 'Залишити відгук',
-                modalDesc: 'Ваш коментар з\'явиться на стіні Оракула.',
-                modalPlaceholder: 'Ваше пророцтво... (Наприклад: \'Моє передбачення було дивно точним!\')',
-                modalCancel: 'Скасувати',
-                modalSubmit: 'Надіслати',
+                // Removed comment-related language keys
+                // commentsTitle: 'Відлуння Оракула',
+                // commentsDesc: 'Поділіться своїми думками про передбачення.',
+                // commentsLoading: 'Завантаження коментарів...',
+                // yourId: 'Ваш ID:',
+                // modalTitle: 'Залишити відгук',
+                // modalDesc: 'Ваш коментар з\'явиться на стіні Оракула.',
+                // modalPlaceholder: 'Ваше пророцтво... (Наприклад: \'Моє передбачення було дивно точним!\')',
+                // modalCancel: 'Скасувати',
+                // modalSubmit: 'Надіслати',
                 jan: 'Січ', feb: 'Лют', mar: 'Бер', apr: 'Кві', may: 'Тра', jun: 'Чер', jul: 'Лип', aug: 'Сер', sep: 'Вер', oct: 'Жов', nov: 'Лис', dec: 'Гру',
                 mon: 'Пн', tue: 'Вт', wed: 'Ср', thu: 'Чт', fri: 'Пт', sat: 'Сб', sun: 'Нд',
                 // Zodiac signs with IT-themed names and emojis
@@ -611,15 +557,16 @@
                 totemTitle: 'Your Totem Animal',
                 totemDesc: 'Uncover your IT totem animal!',
                 totemButton: 'Reveal Your Animal',
-                commentsTitle: 'Oracle Echoes',
-                commentsDesc: 'Share your thoughts on the prophecies.',
-                commentsLoading: 'Loading comments...',
-                yourId: 'Your ID:',
-                modalTitle: 'Leave a Comment',
-                modalDesc: 'Your comment will appear on the Oracle wall.',
-                modalPlaceholder: 'Your prophecy... (e.g., \'My prediction was eerily accurate!\')',
-                modalCancel: 'Cancel',
-                modalSubmit: 'Submit',
+                // Removed comment-related language keys
+                // commentsTitle: 'Oracle Echoes',
+                // commentsDesc: 'Share your thoughts on the prophecies.',
+                // commentsLoading: 'Loading comments...',
+                // yourId: 'Your ID:',
+                // modalTitle: 'Leave a Comment',
+                // modalDesc: 'Your comment will appear on the Oracle wall.',
+                // modalPlaceholder: 'Your prophecy... (e.g., \'My prediction was eerily accurate!\')',
+                // modalCancel: 'Cancel',
+                // modalSubmit: 'Submit',
                 jan: 'Jan', feb: 'Feb', mar: 'Mar', apr: 'Apr', may: 'May', jun: 'Jun', jul: 'Jul', aug: 'Aug', sep: 'Sep', oct: 'Oct', nov: 'Nov', dec: 'Dec',
                 mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun',
                 // Zodiac signs with IT-themed names and emojis
@@ -877,8 +824,8 @@
                     };
                 }
 
-                const apiKey = ""; // Canvas will provide at runtime
-                const apiUrl = 'https://it-oracle-backend-proxy-bgm7glda7-faina-harmashs-projects.vercel.app/api/gemini-proxy';
+                // Make sure this URL is correct for your Vercel deployment!
+                const apiUrl = 'https://it-oracle-backend-proxy.vercel.app/api/gemini-proxy'; // Updated to simpler Vercel URL if available
 
                 const response = await fetch(apiUrl, {
                     method: 'POST',
@@ -972,7 +919,7 @@
             askOracleBtn.disabled = false;
             setTimeout(() => {
                 magicWandIcon.classList.add('hidden');
-                showCommentModal('vacation');
+                // Removed showCommentModal('vacation');
             }, 1000); // Hide wand after animation
         });
 
@@ -985,7 +932,7 @@
             { id: 'bug', emoji: '🐛', name: { uk: 'Глюк', en: 'The Bug' } },
             { id: 'release', emoji: '🚀', name: { uk: 'Реліз', en: 'The Release' } },
             { id: 'debugger', emoji: '🐞', name: { uk: 'Дебагер', en: 'The Debugger' } },
-            { id: 'compiler', emoji: '🤖', name: { uk: 'Компілятор', en: 'The Compiler' } },
+            { id: 'compiler', emoji: '�', name: { uk: 'Компілятор', en: 'The Compiler' } },
             { id: 'mergeConflict', emoji: '💥', name: { uk: 'Конфлікт злиття', en: 'The Merge Conflict' } },
             { id: 'database', emoji: '🗄️', name: { uk: 'База даних', en: 'The Database' } },
             { id: 'cloud', emoji: '☁️', name: { uk: 'Хмара', en: 'The Cloud' } }
@@ -1045,7 +992,7 @@
 
             const result = await callGeminiAPI(prompt);
             interpretationElement.textContent = `${langData[currentLang].tarotInterpretation}${result}`;
-            showCommentModal('tarot');
+            // Removed showCommentModal('tarot');
         };
 
         shuffleTarotBtn.addEventListener('click', () => {
@@ -1091,7 +1038,7 @@
             cookieFortuneResultDiv.querySelector('p').textContent = `${langData[currentLang].cookieFortune}${result}`;
             breakCookieBtn.disabled = false;
             fortuneCookieImg.style.opacity = '1'; // Make cookie visible again for next interaction
-            showCommentModal('cookie');
+            // Removed showCommentModal('cookie');
         });
 
         // Section 4: Monthly Horoscope
@@ -1176,7 +1123,7 @@
             const result = await callGeminiAPI(prompt);
             horoscopeResultDiv.querySelector('p').textContent = `${langData[currentLang].horoscopeResult}${result}`;
             getHoroscopeBtn.disabled = false;
-            showCommentModal('horoscope');
+            // Removed showCommentModal('horoscope');
         });
 
         // Section 5: Your Totem Animal
@@ -1187,7 +1134,7 @@
             { emoji: '🐉', name: { uk: 'Дракон (Компілятор)', en: 'Dragon (The Compiler)' } },
             { emoji: '🦉', name: { uk: 'Сова (Нічний Девелопер)', en: 'Owl (Night Owl Developer)' } },
             { emoji: '🐜', name: { uk: 'Мураха (Організований Рефакторинг)', en: 'Ant (Organized Refactor)' } },
-            { emoji: '�', name: { uk: 'Єдиноріг (Рідкісний QA)', en: 'Unicorn (Rare QA)' } },
+            { emoji: '🦄', name: { uk: 'Єдиноріг (Рідкісний QA)', en: 'Unicorn (Rare QA)' } },
             { emoji: '🦊', name: { uk: 'Лисиця (Хитрий Оптимізатор)', en: 'Fox (Clever Optimizer)' } },
             { emoji: '🕷️', name: { uk: 'Павук (Мережевий Архітектор)', en: 'Spider (Network Architect)' } },
             { emoji: '🐧', name: { uk: 'Пінгвін (Адміністратор Linux)', en: 'Penguin (Linux Admin)' } },
@@ -1228,124 +1175,24 @@
                 animalDiv.remove();
                 totemAnimalDisplayContainer.querySelector('.totem-animal-display + div')?.remove(); // Remove description
                 revealTotemBtn.disabled = false;
-                showCommentModal('totem');
+                // Removed showCommentModal('totem');
             }, 1500); // Remove after animation
         });
 
-        // --- Comment Modal Functionality ---
-        const commentModal = document.getElementById('comment-modal');
-        const cancelCommentBtn = document.getElementById('cancel-comment-btn');
-        const submitCommentBtn = document.getElementById('submit-comment-btn');
-        const commentTextarea = document.getElementById('comment-text');
-        let currentSectionIdForComment = null; // To track which section triggered the modal
+        // --- Comment Modal Functionality (Removed) ---
+        // const commentModal = document.getElementById('comment-modal');
+        // const cancelCommentBtn = document.getElementById('cancel-comment-btn');
+        // const submitCommentBtn = document.getElementById('submit-comment-btn');
+        // const commentTextarea = document.getElementById('comment-text');
+        // let currentSectionIdForComment = null;
+        // const showCommentModal = (sectionId) => { ... };
+        // cancelCommentBtn.addEventListener('click', () => { ... });
+        // submitCommentBtn.addEventListener('click', async () => { ... });
 
-        const showCommentModal = (sectionId) => {
-            currentSectionIdForComment = sectionId;
-            commentTextarea.value = ''; // Clear previous comment
-            commentModal.classList.add('open');
-            playSound('click');
-        };
+        // --- Oracle Echoes (Comments Wall) (Removed) ---
+        // const commentsList = document.getElementById('comments-list');
+        // const setupFirestoreListeners = () => { ... };
 
-        cancelCommentBtn.addEventListener('click', () => {
-            commentModal.classList.remove('open');
-            playSound('click');
-        });
-
-        submitCommentBtn.addEventListener('click', async () => {
-            const comment = commentTextarea.value.trim();
-            if (!comment) {
-                // Optionally show a message to the user that comment cannot be empty
-                console.warn("Comment cannot be empty.");
-                return;
-            }
-
-            if (!isAuthReady || !db || !userId) {
-                console.error("Firebase not initialized or user not authenticated yet.");
-                // Provide user feedback without alert
-                commentTextarea.placeholder = currentLang === 'uk' ? 'Помилка: Не вдалося надіслати коментар. Спробуйте пізніше.' : 'Error: Could not send comment. Try again later.';
-                return;
-            }
-
-            submitCommentBtn.disabled = true;
-            commentTextarea.disabled = true;
-
-            try {
-                // Store comments in a public collection for sharing
-                const commentsRef = collection(db, `artifacts/${appId}/public/data/comments`);
-                await addDoc(commentsRef, {
-                    userId: userId, // Current user's ID
-                    comment: comment,
-                    section: currentSectionIdForComment,
-                    timestamp: serverTimestamp() // Use server timestamp
-                });
-                commentModal.classList.remove('open');
-                commentTextarea.value = '';
-                playSound('click');
-            } catch (e) {
-                console.error("Error adding document: ", e);
-                // Provide user feedback without alert
-                commentTextarea.placeholder = currentLang === 'uk' ? 'Помилка надсилання коментаря.' : 'Error sending comment.';
-            } finally {
-                submitCommentBtn.disabled = false;
-                commentTextarea.disabled = false;
-            }
-        });
-
-
-        // --- Oracle Echoes (Comments Wall) ---
-        const commentsList = document.getElementById('comments-list');
-
-        const setupFirestoreListeners = () => {
-            if (!isAuthReady || !db) {
-                console.log("Firestore not ready for listeners yet.");
-                return;
-            }
-
-            const commentsCollectionRef = collection(db, `artifacts/${appId}/public/data/comments`);
-            const q = query(commentsCollectionRef); // No orderBy here to avoid index errors
-
-            onSnapshot(q, (snapshot) => {
-                commentsList.innerHTML = ''; // Clear existing comments
-                if (snapshot.empty) {
-                    commentsList.textContent = currentLang === 'uk' ? 'Ще немає коментарів. Будьте першими!' : 'No comments yet. Be the first!';
-                    commentsList.classList.add('text-center', 'text-var(--text-secondary)');
-                } else {
-                    commentsList.classList.remove('text-center');
-                    // Sort comments by timestamp client-side for now
-                    const sortedComments = [];
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        sortedComments.push({ id: doc.id, ...data });
-                    });
-
-                    // Sort by timestamp in descending order (newest first)
-                    sortedComments.sort((a, b) => {
-                        if (a.timestamp && b.timestamp) {
-                            return b.timestamp.toDate() - a.timestamp.toDate();
-                        }
-                        return 0; // Handle cases where timestamp might be missing
-                    });
-
-                    sortedComments.forEach(docData => {
-                        const commentDiv = document.createElement('div');
-                        commentDiv.className = 'bg-gray-900/50 p-4 rounded-lg mb-3 shadow-md';
-                        const time = docData.timestamp ? new Date(docData.timestamp.seconds * 1000).toLocaleString(currentLang === 'uk' ? 'uk-UA' : 'en-US') : 'N/A';
-                        commentDiv.innerHTML = `
-                            <p class="text-sm text-var(--text-secondary) mb-1">
-                                <strong class="text-var(--accent-color)">${docData.userId}</strong> 
-                                <span class="ml-2">${time}</span>
-                            </p>
-                            <p class="text-var(--text-light) text-base break-words">${docData.comment}</p>
-                            <p class="text-xs text-gray-500 mt-1">Section: ${docData.section || 'N/A'}</p>
-                        `;
-                        commentsList.appendChild(commentDiv);
-                    });
-                }
-            }, (error) => {
-                console.error("Error listening to comments:", error);
-                commentsList.textContent = currentLang === 'uk' ? 'Помилка завантаження коментарів.' : 'Error loading comments.';
-            });
-        };
 
         // --- Initial Setup on Window Load ---
         window.onload = async () => {
@@ -1361,7 +1208,8 @@
             document.body.addEventListener('click', startTone, { once: true });
             document.body.addEventListener('touchstart', startTone, { once: true });
 
-            await initializeFirebase();
+            // Removed Firebase initialization as it's no longer needed
+            // await initializeFirebase();
             // Firestore listener will be set up in `onAuthStateChanged` callback once auth is ready
         };
     </script>
