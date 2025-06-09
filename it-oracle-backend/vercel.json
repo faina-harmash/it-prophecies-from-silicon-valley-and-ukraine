@@ -1,20 +1,29 @@
+{
+  "version": 2,
+  "builds": [
     {
-      "version": 2,
-      "builds": [
-        {
-          "src": "server.js",
-          "use": "@vercel/node"
-        }
-      ],
-      "routes": [
-        {
-          "src": "/api/gemini-proxy",
-          "dest": "server.js"
-        },
-        {
-          "src": "/(.*)",
-          "dest": "server.js"
-        }
-      ]
+      "src": "server.js",
+      "use": "@vercel/node"
     }
-    
+  ],
+  "routes": [
+    {
+      "src": "/api/gemini-proxy",
+      "dest": "server.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*", // Дозволити запити з будь-якого джерела
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "server.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*", // Дозволити запити з будь-якого джерела
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+      }
+    }
+  ]
+}
